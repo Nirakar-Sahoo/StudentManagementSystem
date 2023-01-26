@@ -10,7 +10,7 @@ public interface IStudentService {
 	public String createStudent(Student std);
 	
 	//update student assign course
-	public void updateStudentAssignCourse(Integer sid,Integer cid);
+	public String updateStudentAssignCourse(Integer sid,Integer cid);
 	
 	//search a student by name
 	public List<Student> getStudentByName(String name);
@@ -28,5 +28,5 @@ public interface IStudentService {
 	public List<Course> getCourseOfStudent(String code);
 	
 	//leave a course of a student
-	public void leaveCourseOfStudent(String code,Integer cid);
+	public String leaveCourseOfStudent(String code,Integer cid);
 }

@@ -1,10 +1,10 @@
 package com.commons.nirakar.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.commons.nirakar.exception.StudentNotFoundException;
 import com.commons.nirakar.model.Course;
@@ -28,17 +28,23 @@ public class StudentServiceImpl implements IStudentService {
 	}
 	
 	@Override
-	public void updateStudentAssignCourse(Integer sid, Integer cid) {
+	@Transactional
+	public String updateStudentAssignCourse(Integer sid, Integer cid) {
 		//get student by id
 		Student std=srepo.findById(sid).orElseThrow(()-> new StudentNotFoundException("Student not exist"));
 		//get course by id
 		Course course=cservice.getCourseById(cid);
 		if(std!=null && course!=null && !std.getCourse().contains(course)) { 
-			List<Course> courses=std.getCourse();
-			courses.add(course);
-			std.setCourse(courses);
-			//update student
-			srepo.save(std);
+			Integer count= srepo.updateStudentaddCourse(sid, cid);
+			if(count>0) {
+				return "Course Assigned to student";
+			}
+			else {
+				return "Course not Assigned to student";
+			}
+		}
+		else {
+			return "Course already assigned";
 		}
 	}
 	
@@ -83,18 +89,19 @@ public class StudentServiceImpl implements IStudentService {
 	}
 	
 	@Override
-	public void leaveCourseOfStudent(String code, Integer cid) {
+	@Transactional
+	public String leaveCourseOfStudent(String code, Integer cid) {
 		//get student by code
 		Student std=srepo.findByUniqueStudentCode(code).
 		       orElseThrow(()->new StudentNotFoundException("student not exist"));
 		//get course deatils
 		Course course=cservice.getCourseById(cid);
-		if(std!=null && course!=null) {
-			if(std.getCourse().contains(course)) {
-				std.getCourse().remove(course);
-				srepo.save(std);
-			}
-			
+		if(std!=null && course!=null && std.getCourse().contains(course)) {
+			Integer count=srepo.updateStudentLeaveCourse(std.getSid(), cid);
+			return count>0?"Student leaved the course":"Student not leaved the course";
+		}
+		else {
+			return "Student not contain the course";
 		}
 	}
 }

@@ -69,8 +69,7 @@ public class StudentRestController {
 	public ResponseEntity<?> leaveCourse(@PathVariable String uniquecode,@PathVariable Integer cid){
 		ResponseEntity<?> entity=null;
 		try {
-			stdservice.leaveCourseOfStudent(uniquecode, cid);
-			entity=new ResponseEntity<>("student leaved the course",HttpStatus.OK);
+			entity=new ResponseEntity<>(stdservice.leaveCourseOfStudent(uniquecode, cid),HttpStatus.OK);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
